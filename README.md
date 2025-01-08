@@ -83,22 +83,6 @@ The VR demo section uses A-Frame to create immersive experiences:
 
 ## Customization
 
-### Styling
-
-The project uses Tailwind CSS for styling. Main theme colors can be modified in the `tailwind.config.js` file:
-
-```javascript
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {...},
-        secondary: {...}
-      }
-    }
-  }
-}
-```
 
 ### Animations
 
