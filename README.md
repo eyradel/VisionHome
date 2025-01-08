@@ -60,19 +60,7 @@ yarn dev
 ```
 visionhome/
 ├── index.html
-├── assets/
-│   ├── css/
-│   │   └── styles.css
-│   ├── js/
-│   │   └── main.js
-│   └── images/
-├── components/
-│   ├── Navigation/
-│   ├── Hero/
-│   ├── Services/
-│   ├── Portfolio/
-│   └── Contact/
-└── public/
+
 ```
 
 ## Key Components
