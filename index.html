@@ -1,0 +1,780 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionHome - Immersive Real Estate Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(99, 102, 241, 0.95));
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .cityscape {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) translateY(100px);
+        }
+
+        .building-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            padding: 20px;
+            transform-origin: bottom;
+        }
+
+        .building {
+            position: relative;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform-origin: bottom;
+            animation: buildingRise 2s ease-out forwards;
+            opacity: 0;
+            backdrop-filter: blur(5px);
+        }
+
+        .building::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0.05)
+            );
+        }
+
+        .building.tall {
+            height: 200px;
+        }
+
+        .building.medium {
+            height: 150px;
+        }
+
+        .building.small {
+            height: 100px;
+        }
+
+        @keyframes buildingRise {
+            0% {
+                transform: scaleY(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(50px);
+            }
+        }
+
+        .window {
+            position: absolute;
+            width: 20%;
+            height: 10%;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 10%;
+            animation: windowGlow 4s infinite;
+        }
+
+        @keyframes windowGlow {
+            0%, 100% {
+                background: rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .floating-element {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .blueprint-house {
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: absolute;
+            opacity: 0.4;
+        }
+
+        .house-icon {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            fill: rgba(255, 255, 255, 0.3);
+            animation: float-up 8s ease-in-out infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.4;
+            }
+            80% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .measuring-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            transform-origin: left;
+            animation: measure 4s ease-in-out infinite;
+        }
+
+        @keyframes measure {
+            0% {
+                transform: scaleX(0);
+            }
+            50% {
+                transform: scaleX(1);
+            }
+            100% {
+                transform: scaleX(0);
+            }
+        }
+
+        .compass {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .compass::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left;
+            transform: translateY(-50%) rotate(0deg);
+            animation: compass-needle 5s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes compass-needle {
+            0% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-50%) rotate(180deg);
+            }
+            100% {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+
+        .dimension-text {
+            position: absolute;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            animation: fade-in-out 4s ease-in-out infinite;
+        }
+
+        @keyframes fade-in-out {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+            will-change: transform;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .gradient-border {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3B82F6, #6366F1) border-box;
+            border: 2px solid transparent;
+        }
+
+        .scene-container {
+            height: 60vh;
+            min-height: 400px;
+            width: 100%;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            aspect-ratio: 3/2;
+        }
+
+        .portfolio-item img {
+            transition: transform 0.5s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 2rem;
+            transition: bottom 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: 80vh;
+            }
+            
+            .scene-container {
+                height: 50vh;
+            }
+            
+            .portfolio-item {
+                aspect-ratio: 16/9;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-menu fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 lg:hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">V</span>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        VisionHome
+                    </span>
+                </div>
+                <button id="close-menu" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="space-y-4">
+                <a href="#home" class="block text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+                <a href="#services" class="block text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+                <a href="#portfolio" class="block text-gray-700 hover:text-blue-600 transition-colors">Portfolio</a>
+                <a href="#vr-demo" class="block text-gray-700 hover:text-blue-600 transition-colors">VR Demo</a>
+                <a href="#contact" class="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                    Contact Us
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-40 transition-all duration-300 bg-white/95 backdrop-blur-md shadow-md" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">V</span>
+                    </div>
+                    <span class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        VisionHome
+                    </span>
+                </div>
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+                    <a href="#services" class="text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+                    <a href="#portfolio" class="text-gray-700 hover:text-blue-600 transition-colors">Portfolio</a>
+                    <a href="#vr-demo" class="text-gray-700 hover:text-blue-600 transition-colors">VR Demo</a>
+                    <a href="#contact" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Contact Us
+                    </a>
+                </div>
+                <button id="menu-toggle" class="lg:hidden text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section flex items-center justify-center relative px-4">
+        <!-- 3D Cityscape -->
+        <div class="cityscape">
+            <div class="grid-overlay"></div>
+            <div class="building-grid" id="buildingGrid">
+                <!-- Buildings will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="text-center text-white z-10 max-w-4xl mx-auto relative">
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-bold mb-6" id="hero-title" style="opacity: 0">
+                Experience Tomorrow's Home
+                <span class="block text-2xl sm:text-4xl md:text-5xl mt-4 font-normal">Today</span>
+            </h1>
+            <p class="text-lg sm:text-xl md:text-2xl mb-12" id="hero-subtitle" style="opacity: 0">
+                Revolutionary Virtual Reality Real Estate Visualization
+            </p>
+            <div class="space-y-4 sm:space-y-0 sm:space-x-6" id="hero-buttons" style="opacity: 0">
+                <a href="#vr-demo" class="inline-block bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                    Try VR Demo
+                </a>
+                <a href="#portfolio" class="inline-block border-2 border-white text-white font-bold py-3 px-8 rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                    View Portfolio
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Building generation and animation
+        function generateBuildings() {
+            const grid = document.getElementById('buildingGrid');
+            const rows = 6; // Number of rows
+            const cols = 8; // Number of columns
+            const types = ['tall', 'medium', 'small'];
+            
+            for (let i = 0; i < rows * cols; i++) {
+                const building = document.createElement('div');
+                const type = types[Math.floor(Math.random() * types.length)];
+                building.className = `building ${type}`;
+                
+                // Add random delay to each building
+                const delay = Math.random() * 2;
+                building.style.animationDelay = `${delay}s`;
+                
+                // Add windows
+                const windowCount = Math.floor(Math.random() * 3) + 2;
+                for (let j = 0; j < windowCount; j++) {
+                    const window = document.createElement('div');
+                    window.className = 'window';
+                    window.style.top = `${Math.random() * 80}%`;
+                    window.style.left = `${Math.random() * 80}%`;
+                    window.style.animationDelay = `${Math.random() * 4}s`;
+                    building.appendChild(window);
+                }
+                
+                grid.appendChild(building);
+            }
+        }
+
+        // Initialize buildings when page loads
+        window.addEventListener('load', generateBuildings);
+
+        // Regenerate buildings when returning to view
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                const grid = document.getElementById('buildingGrid');
+                grid.innerHTML = '';
+                generateBuildings();
+            }
+        });
+
+        // GSAP animations for content
+        gsap.from("#hero-title", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.5
+        });
+
+        gsap.from("#hero-subtitle", {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.8
+        });
+
+        gsap.from("#hero-buttons", {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 1.1
+        });
+    </script>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 sm:py-32 bg-white relative">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 sm:mb-20">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Our Services</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto px-4">
+                    Experience the future of real estate visualization with our cutting-edge services
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                <div class="card-hover gradient-border p-6 sm:p-8 rounded-lg bg-white">
+                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">3D Visualization</h3>
+                    <p class="text-gray-600">Experience photorealistic renders that bring your future property to life with stunning detail and accuracy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VR Demo Section -->
+    <section id="vr-demo" class="py-20 sm:py-32 bg-gray-100 relative">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 sm:mb-20">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Interactive VR Experience</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Step into your future home with our immersive virtual reality experience
+                </p>
+            </div>
+            <div class="scene-container shadow-xl">
+                <a-scene embedded>
+                    <a-assets>
+                        <img id="sky" src="/api/placeholder/4096/2048" />
+                    </a-assets>
+                    <a-sky src="#sky" rotation="0 -90 0"></a-sky>
+                    <a-entity position="0 0 0">
+                        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4C51BF" 
+                               animation="property: rotation; to: 0 405 0; dur: 2000; easing: easeInOutQuad; loop: true">
+                        </a-box>
+                        <a-sphere position="0 1.25 -5" radius="1.25" color="#2B6CB0" 
+                                 animation="property: position; dir: alternate; dur: 2000; easing: easeInOutQuad; loop: true; to: 0 1.75 -5">
+                        </a-sphere>
+                        <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#2C5282"></a-cylinder>
+                        <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#718096"></a-plane>
+                    </a-entity>
+                    <a-camera>
+                        <a-cursor color="#4C51BF"></a-cursor>
+                    </a-camera>
+                </a-scene>
+            </div>
+            <div class="text-center mt-8 sm:mt-12">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                    Launch Full VR Mode
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-20 sm:py-32 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 sm:mb-20">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Our Portfolio</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Explore our collection of immersive virtual reality projects
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="portfolio-item shadow-lg">
+                    <img src="/api/placeholder/600/400" alt="Modern Villa Project" class="w-full h-full object-cover">
+                    <div class="portfolio-overlay text-white">
+                        <h3 class="text-xl font-bold mb-2">Luxury Villa</h3>
+                        <p>Modern architectural masterpiece with panoramic views</p>
+                    </div>
+                </div>
+                <div class="portfolio-item shadow-lg">
+                    <img src="/api/placeholder/600/400" alt="Urban Apartment Project" class="w-full h-full object-cover">
+                    <div class="portfolio-overlay text-white">
+                        <h3 class="text-xl font-bold mb-2">Urban Loft</h3>
+                        <p>Contemporary city living with smart home features</p>
+                    </div>
+                </div>
+                <div class="portfolio-item shadow-lg">
+                    <img src="/api/placeholder/600/400" alt="Coastal Home Project" class="w-full h-full object-cover">
+                    <div class="portfolio-overlay text-white">
+                        <h3 class="text-xl font-bold mb-2">Coastal Retreat</h3>
+                        <p>Beachfront property with sustainable design</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 sm:py-32 bg-gray-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="p-8 sm:p-12 bg-blue-600 text-white">
+                        <h2 class="text-2xl sm:text-3xl font-bold mb-6">Get in Touch</h2>
+                        <p class="mb-8">Ready to experience the future of real estate? Contact us today.</p>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="font-semibold mb-1">Location</h3>
+                                    <p>123 Innovation Drive, Tech City, TC 12345</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="font-semibold mb-1">Email</h3>
+                                    <p>contact@visionhome.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="font-semibold mb-1">Phone</h3>
+                                    <p>+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8 sm:p-12">
+                        <form class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelectorAll('.mobile-menu a');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // Navbar scroll behavior
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                navbar.classList.remove('shadow-md');
+                return;
+            }
+
+            if (currentScroll > lastScroll) {
+                // Scrolling down
+                navbar.classList.add('-translate-y-full');
+                navbar.classList.add('shadow-md');
+            } else {
+                // Scrolling up
+                navbar.classList.remove('-translate-y-full');
+                navbar.classList.add('shadow-md');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Particle animation
+        function createParticle() {
+            const particles = document.getElementById('particles');
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random position
+            const x = Math.random() * window.innerWidth;
+            const delay = Math.random() * 2;
+            
+            particle.style.left = `${x}px`;
+            particle.style.bottom = '-10px';
+            particle.style.animation = `float-up ${8 + Math.random() * 4}s linear ${delay}s`;
+            
+            particles.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, (8 + delay) * 1000);
+        }
+
+        // Create particles periodically
+        setInterval(createParticle, 300);
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero animations
+        gsap.from("#hero-title", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out"
+        });
+
+        gsap.from("#hero-subtitle", {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.3
+        });
+
+        gsap.from("#hero-buttons", {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.6
+        });
+
+        // Scroll animations for sections
+        const sections = document.querySelectorAll('section:not(#home)');
+        
+        sections.forEach(section => {
+            gsap.from(section.children, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse"
+                },
+                duration: 1,
+                y: 30,
+                opacity: 0,
+                ease: "power3.out",
+                stagger: 0.2
+            });
+        });
+    </script>
+</body>
+</html>
